@@ -1,0 +1,64 @@
+---
+
+- hosts: localhost
+  become: true
+  tasks:
+
+  - name: Create cgroup filter (handle :2)
+    tc_filter:
+      device: eth0
+      flowid: "10:2" #Still required
+      parent: "10:"
+      port:   65536  #Still required
+      priority: 2
+      state: present
+      cgroup: yes
+      handle: "0x2"
+
+  - name: Create 2nd cgroup filter (handle :3)
+    tc_filter:
+      device: eth0
+      flowid: "10:3" #Still required
+      parent: "10:"
+      port:   65536  #Still required
+      priority: 3
+      state: present
+      cgroup: yes
+      handle: "3:"
+
+  - name: Create cgroup filter (handle :4)
+    tc_filter:
+      device: eth0
+      flowid: "10:4" #Still required
+      parent: "10:"
+      port:   65536  #Still required
+      priority: 4
+      state: present
+      cgroup: yes
+      handle: "4:"
+
+  - name: Create cgroup filter (handle :5)
+    tc_filter:
+      device: eth0
+      flowid: "10:5" #Still required
+      parent: "10:"
+      port:   65536  #Still required
+      priority: 5
+      state: present
+      cgroup: yes
+      handle: "5:"
+
+  - name: Create cgroup filter (handle :6)
+    tc_filter:
+      device: eth0
+      flowid: "10:6" #Still required
+      parent: "10:"
+      port:   65536  #Still required
+      priority: 6
+      state: present
+      cgroup: yes
+      handle: "6:"
+
+
+
+...

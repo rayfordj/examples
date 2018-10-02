@@ -1,0 +1,52 @@
+---
+
+- hosts: localhost
+  become: true
+  tasks:
+
+  - name: Create htb qdisc
+    tc_qdisc:
+      handle: "10:"
+      device: eth0
+      state: present
+      qdisc: root
+      discipline: htb
+
+  - name: Create class ID2 0x00100002
+    tc_class:
+      parent: "10:"
+      classid: "10:2"
+      device: eth0
+      rate: 800mbit
+
+  - name: Create class ID3 0x00100003
+    tc_class:
+      parent: "10:"
+      classid: "10:3"
+      device: eth0
+      rate: 500mbit
+
+  - name: Create class ID4 0x00100004
+    tc_class:
+      parent: "10:"
+      classid: "10:4"
+      device: eth0
+      rate: 200mbit
+
+  - name: Create class ID5 0x00100005
+    tc_class:
+      parent: "10:"
+      classid: "10:5"
+      device: eth0
+      rate: 300mbit
+      ceil: 500mbit
+
+  - name: Create class ID6 0x00100006
+    tc_class:
+      parent: "10:"
+      classid: "10:6"
+      device: eth0
+      rate: 900mbit
+      ceil: 450mbit
+
+...
