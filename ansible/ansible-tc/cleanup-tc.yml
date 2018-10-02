@@ -1,0 +1,15 @@
+---
+
+- hosts: localhost
+  become: true
+  tasks:
+
+  - name: Restore to default qdisc
+    tc_qdisc:
+      handle: "10:"
+      device: eth0
+      state: absent
+      qdisc: root
+      discipline: htb
+
+...
