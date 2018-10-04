@@ -1,0 +1,23 @@
+---
+
+- hosts: localhost
+  become: true
+  tasks:
+
+  - name: Modify class id2 limits (0x00100002)
+    tc_class:
+      parent: "10:"
+      classid: "10:2"
+      device: eth0
+      rate: 500mbit
+      ceil: 600mbit
+
+  - name: Modify class id3 limits (0x00100003)
+    tc_class:
+      parent: "10:"
+      classid: "10:3"
+      device: eth0
+      rate: 400mbit
+      ceil: 200mbit
+
+...

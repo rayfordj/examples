@@ -1,0 +1,77 @@
+---
+
+- hosts: localhost
+  become: true
+  tasks:
+
+  - name: Create root htb qdisc (handle 10:)
+    tc_qdisc:
+      handle: "10:"
+      device: eth0
+      state: present
+      qdisc: root
+      discipline: htb
+
+  - name: Create class id2 (0x00100002)
+    tc_class:
+      parent: "10:"
+      classid: "10:2"
+      device: eth0
+      rate: 800mbit
+      ceil: 800mbit
+
+  - name: Create class id3 (0x00100003)
+    tc_class:
+      parent: "10:"
+      classid: "10:3"
+      device: eth0
+      rate: 500mbit
+      ceil: 500mbit
+
+  - name: Create cgroup filter (handle :2)
+    tc_filter:
+      device: eth0
+      flowid: "10:2"
+      parent: "10:"
+      port:   65536
+      priority: 2
+      state: present
+      cgroup: yes
+      handle: "0x2"
+
+  - name: Create cgroup filter (handle :3)
+    tc_filter:
+      device: eth0
+      flowid: "10:3"
+      parent: "10:"
+      port:   65536
+      priority: 3
+      state: present
+      cgroup: yes
+      handle: "3:"
+
+  - name: Create cgroup net_cls entry for IMS (planA)
+    file: 
+      path: /sys/fs/cgroup/net_cls/ims/planA
+      state: directory
+      mode: 0755
+
+  - name: Create cgroup net_cls entry for IMS (planB)
+    file: 
+      path: /sys/fs/cgroup/net_cls/ims/planB
+      state: directory
+      mode: 0755
+
+  - name: Set planA classid to tc class (0x00100002)
+    copy:
+      content: '0x00100002'
+      dest: /sys/fs/cgroup/net_cls/ims/planA/net_cls.classid
+      unsafe_writes: yes
+
+  - name: Set planB classid to tc class (0x00100003)
+    copy:
+      content: '0x00100003'
+      dest: /sys/fs/cgroup/net_cls/ims/planB/net_cls.classid
+      unsafe_writes: yes
+
+...

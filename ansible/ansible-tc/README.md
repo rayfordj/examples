@@ -1,4 +1,4 @@
-# Ansible modules for Traffic Control - Examples
+# Ansible modules for Traffic Control - IMS Examples
 
 ### Source
 * Upstream: [ansible-tc](https://github.com/msuringa/ansible-tc)
@@ -6,30 +6,25 @@
 
 ## Overview
 
-* Set appropriate values in the yml files
-* Execute setup-htb... and setup-filters 
-* Configure appropriate net_cls cgroups structure and populate net_cls.classid
-  with corresponding major:minor of tc 
+* Set hosts and values in the yml files
+* Execute setup-htb-qdisc-classes-filters-and-cgroup.net_cls.yml play
 * Classify process(es) in desired cgroup net_cls tasks bucket(s)
 
 
 ## Example
 ```bash
-ansible-playbook -i ./inventory setup-htb-qdisc-and-classes.yml
+ansible-playbook -i ./inventory setup-htb-qdisc-classes-filters-and-cgroup.net_cls.yml
 
-ansible-playbook -i ./inventory setup-filters.yml
+cgexec -g net_cls:ims/planA your-command-with-options  &
 
-mkdir -p /sys/fs/cgroup/net_cls/examples/id{2..6}
+cgexec -g net_cls:ims/planA some-other-command-with-options  &
 
-for i in {2..6}; do echo 0x0010000"${i}" > /sys/fs/cgroup/net_cls/examples/id"${i}"/net_cls.classid ; done
+cgexec -g net_cls:ims/planB yet-another-command-with-options  &
 
-cgexec -g net_cls:examples/id3 your-command-with-options  &
+echo "${RUNNING-PID}" > /sys/fs/cgroup/net_cls/ims/planB/tasks
 
-cgexec -g net_cls:examples/id3 some-other-command-with-options  &
+ansible-playbook -i ./inventory modify-class-rate-ceil.yml
 
-cgexec -g net_cls:examples/id5 yet-another-command-with-options  &
-
-echo "${RUNNING-PID}" > /sys/fs/cgroup/net_cls/examples/id2/tasks
 
 ```
 
